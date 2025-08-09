@@ -1,37 +1,41 @@
-import os, json, uuid, time, requests
+import os
+import json
+import uuid
+import time
+import requests
 from fastapi import FastAPI, Form, HTTPException
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-# Create FastAPI app
+# Initialize FastAPI app
 app = FastAPI(title="NexGen BPO - Pilot (Co-Founder Edition)")
 
-# CORS setup
+# Allow CORS for all origins (for testing, you can restrict later)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 # Serve static files
 if not os.path.exists("static"):
     os.makedirs("static")
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
+# Submissions file path
 SUBMISSIONS_FILE = os.path.join("static", "submissions.json")
 if not os.path.exists(SUBMISSIONS_FILE):
     with open(SUBMISSIONS_FILE, "w") as f:
         json.dump([], f)
 
-# Environment variables
+# Load environment variables
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")
 ELEVENLABS_VOICE = os.getenv("ELEVENLABS_VOICE", "Bella")
 
-# ElevenLabs text-to-speech
+# ElevenLabs TTS function
 def elevenlabs_tts(text, voice=ELEVENLABS_VOICE):
     if not ELEVENLABS_API_KEY:
         return None
@@ -52,44 +56,35 @@ def elevenlabs_tts(text, voice=ELEVENLABS_VOICE):
                 for chunk in r.iter_content(chunk_size=1024):
                     if chunk:
                         f.write(chunk)
-            return f"/static/{os.path.basename(audio_path)}"
+            return audio_path
+        else:
+            return None
     except Exception as e:
-        print(f"Error: {e}")
-    return None
+        print(f"TTS Error: {e}")
+        return None
 
-# API route for form submission
-@app.post("/submit")
-async def submit(name: str = Form(...), message: str = Form(...)):
-    new_entry = {"id": str(uuid.uuid4()), "name": name, "message": message, "time": time.time()}
-    try:
-        with open(SUBMISSIONS_FILE, "r") as f:
-            data = json.load(f)
-    except:
-        data = []
+# API route for TTS
+@app.post("/api/tts")
+async def generate_tts(text: str = Form(...)):
+    audio_file = elevenlabs_tts(text)
+    if not audio_file:
+        raise HTTPException(status_code=500, detail="TTS generation failed.")
+    return {"audio_url": f"/{audio_file}"}
 
-    data.append(new_entry)
-    with open(SUBMISSIONS_FILE, "w") as f:
-        json.dump(data, f)
+# API route to store submissions
+@app.post("/api/submit")
+async def submit_data(name: str = Form(...), email: str = Form(...), message: str = Form(...)):
+    new_entry = {"name": name, "email": email, "message": message, "timestamp": time.time()}
+    with open(SUBMISSIONS_FILE, "r+") as f:
+        data = json.load(f)
+        data.append(new_entry)
+        f.seek(0)
+        json.dump(data, f, indent=2)
+    return JSONResponse(content={"status": "success", "message": "Data saved successfully."})
 
-    # Generate audio
-    audio_file = elevenlabs_tts(f"Hello {name}, thank you for your message!")
-    return JSONResponse(content={"status": "success", "audio": audio_file})
-
-# Root homepage
-@app.get("/", response_class=HTMLResponse)
-async def home():
-    return """
-    <html>
-    <head><title>NexGen BPO Pilot</title></head>
-    <body style="text-align:center;font-family:sans-serif;">
-        <h1>🚀 NexGen BPO Pilot is Live</h1>
-        <p>Your AI Agent platform is running!</p>
-        <p><a href="/static">View static files</a></p>
-    </body>
-    </html>
-    """
-
-# Start server
+# Run locally or on Render
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=10000)
+
+
