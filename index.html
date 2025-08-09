@@ -1,114 +1,50 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>NexGen BPO — Pilot</title>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexGen BPO AI Agency</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="wrap header-inner">
-      <img src="logo.png" class="logo" alt="NexGen logo">
-      <div class="brand">
-        <h1>Try NexGen AI Live</h1>
-        <p class="tagline">Your Complete Back Office — 24/7 Available.</p>
-      </div>
-      <div class="lang-toggle">
-        <button id="btnEN">EN</button><button id="btnNL">NL</button>
-      </div>
-    </div>
-  </header>
-  <main class="wrap">
-    <section class="hero">
-      <div class="left">
-        <h2 id="rotating">Save up to <strong>80%</strong> on labor costs — without sacrificing service.</h2>
-        <div class="slogan small">Uw complete backoffice — 24/7 beschikbaar.</div>
+    <header>
+        <img src="/static/logo.png" alt="NexGen Logo" class="logo">
+        <h1>Welcome to NexGen BPO AI Agency</h1>
+    </header>
 
-        <div class="calculator card">
-          <h3>Find your plan</h3>
-          <label>Industry:
-            <select id="industry">
-              <option value="plumber">Plumber</option>
-              <option value="dentist">Dentist</option>
-              <option value="realestate">Real Estate</option>
-            </select>
-          </label>
-          <label>Inbound calls/month: <input id="inbound" type="number" value="120"></label>
-          <label>Outbound calls/month: <input id="outbound" type="number" value="80"></label>
-          <label>Avg length (min): <input id="length" type="number" value="3"></label>
-          <button id="calc" class="button">Recommend Plan</button>
-          <div id="result"></div>
-        </div>
+    <main>
+        <section id="intro">
+            <p>We bring AI-powered solutions to boost your business process outsourcing efficiency.</p>
+        </section>
 
-        <div class="plans card">
-          <h3>Starter Packs</h3>
-          <div class="plan"><h4>Starter</h4><p>200 min / month - €49</p></div>
-          <div class="plan"><h4>Growth</h4><p>1000 min / month - €99</p></div>
-          <div class="plan"><h4>Pro</h4><p>5000 min / month - €399</p></div>
-        </div>
+        <section id="form-section">
+            <h2>Contact Us</h2>
+            <form id="contactForm" method="POST" action="/submit">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
 
-      </div>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
 
-      <div class="right">
-        <div class="demo card">
-          <h3>Try NexGen AI Live</h3>
-          <label>Scenario:
-            <select id="scenario">
-              <option value="outbound_dutch">Outbound — Dutch</option>
-              <option value="inbound_dutch">Inbound — Dutch</option>
-              <option value="appointment_plumber_nl">Appointment — Plumber (NL)</option>
-              <option value="sales_closer_en">Sales Closer — EN</option>
-              <option value="appointment_realestate_en">Real Estate — EN</option>
-            </select>
-          </label>
-          <label>Language:
-            <select id="lang"><option value="nl">Dutch</option><option value="en">English</option></select>
-          </label>
-          <button id="play" class="button">Play Voice</button>
-          <audio id="player" controls></audio>
-          <div id="transcript"></div>
-          <div class="badges">
-            <span class="badge">AI Memory Enabled</span>
-            <span class="badge">Noise-Free Voice Isolation</span>
-            <span class="badge">GDPR Ready</span>
-          </div>
-        </div>
+                <button type="submit">Send</button>
+            </form>
+        </section>
 
-        <div class="video card">
-          <h4>Concept Video</h4>
-          <div class="video-placeholder" id="videoPlaceholder">YouTube Short</div>
-          <div class="share"><button id="shareLinkedIn">Share on LinkedIn</button> <button id="shareWA">Share on WhatsApp</button></div>
-        </div>
+        <section id="tts-section">
+            <h2>Try Our Text-to-Speech</h2>
+            <form id="ttsForm" method="POST" action="/tts">
+                <label for="ttsText">Enter text:</label>
+                <textarea id="ttsText" name="text" required></textarea>
+                <button type="submit">Convert to Speech</button>
+            </form>
+            <audio id="ttsAudio" controls></audio>
+        </section>
+    </main>
 
-      </div>
-    </section>
+    <footer>
+        <p>&copy; 2025 NexGen BPO AI Agency. All rights reserved.</p>
+    </footer>
 
-    <section class="live card" id="liveSection">
-      <h3>Live Screen (Demo Mode)</h3>
-      <div id="liveMap">[Live world map placeholder]</div>
-      <div id="ticker"></div>
-      <div class="controls"><button id="toggleDemo">Toggle Demo Mode</button></div>
-    </section>
-
-    <section id="contact" class="section card">
-      <h3>Contact & Request Pilot</h3>
-      <form id="contactForm">
-        <input name="name" placeholder="Your name" required>
-        <input name="email" type="email" placeholder="Email" required>
-        <select name="plan"><option>Starter</option><option>Growth</option><option>Pro</option></select>
-        <textarea name="message" placeholder="Message"></textarea>
-        <button type="submit" class="button">Send</button>
-        <div id="formStatus"></div>
-      </form>
-    </section>
-
-  </main>
-  <footer class="wrap">
-    <div class="foot">© 2025 NexGen BPO — All rights reserved.</div>
-  </footer>
-
-<script src="script.js"></script>
-<script src="live_screen.js"></script>
+    <script src="/static/script.js"></script>
 </body>
 </html>
